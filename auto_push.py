@@ -1,33 +1,26 @@
 import os
-import subprocess
 
-# Set the path to your local repository
-REPO_PATH = r"C:\Users\hp\Desktop\leetcode-solutions"
+REPO_PATH = r"C:\Users\hp\Desktop\leetcode-solutions"  # Update this with your actual repo path
 
-def git_push():
+def auto_push():
     try:
-        os.chdir(REPO_PATH)  # Navigate to the repository folder
+        os.chdir(REPO_PATH)  # Navigate to the repo directory
 
-        # Check for changes
-        status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
-        if not status.stdout.strip():
-            print("✅ No new changes to push.")
-            return
+        # Step 1: Pull latest changes to avoid conflicts
+        os.system("git pull --rebase origin main")
 
-        # Add all changes
-        subprocess.run(["git", "add", "."], check=True)
+        # Step 2: Add all new files
+        os.system("git add .")
 
-        # Commit the changes with a message
-        commit_message = "📌 Auto-update: Added new LeetCode solution"
-        subprocess.run(["git", "commit", "-m", commit_message], check=True)
+        # Step 3: Commit changes
+        os.system('git commit -m "📌 Auto-update: Added new LeetCode solution"')
 
-        # Push to GitHub
-        subprocess.run(["git", "push"], check=True)
+        # Step 4: Push to GitHub
+        os.system("git push origin main")
 
-        print("🚀 Changes successfully pushed to GitHub!")
-
-    except subprocess.CalledProcessError as e:
-        print(f"❌ Git error: {e}")
+        print("✅ Successfully pushed to GitHub!")
+    except Exception as e:
+        print(f"❌ Error: {e}")
 
 if __name__ == "__main__":
-    git_push()
+    auto_push()
