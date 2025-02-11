@@ -1,30 +1,33 @@
 import os
-import git
-from datetime import datetime
+import subprocess
 
-# Set your GitHub repo path (where your solutions are stored)
-REPO_PATH = "C:/Users/hp/Desktop/leetcode-solutions"  # Change this to your actual repo path
+# Set the path to your local repository
+REPO_PATH = r"C:\Users\hp\Desktop\leetcode-solutions"
 
 def git_push():
     try:
-        # Open the Git repository
-        repo = git.Repo(REPO_PATH)
-        
-        # Add all new/modified files
-        repo.git.add('--all')
+        os.chdir(REPO_PATH)  # Navigate to the repository folder
 
-        # Commit with a timestamp message
-        commit_message = f"Auto-commit: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-        repo.index.commit(commit_message)
+        # Check for changes
+        status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
+        if not status.stdout.strip():
+            print("✅ No new changes to push.")
+            return
 
-        # Push changes to GitHub
-        origin = repo.remote(name='origin')
-        origin.push()
+        # Add all changes
+        subprocess.run(["git", "add", "."], check=True)
 
-        print("✅ Successfully pushed to GitHub!")
+        # Commit the changes with a message
+        commit_message = "📌 Auto-update: Added new LeetCode solution"
+        subprocess.run(["git", "commit", "-m", commit_message], check=True)
 
-    except Exception as e:
-        print(f"❌ Error: {e}")
+        # Push to GitHub
+        subprocess.run(["git", "push"], check=True)
+
+        print("🚀 Changes successfully pushed to GitHub!")
+
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Git error: {e}")
 
 if __name__ == "__main__":
     git_push()
